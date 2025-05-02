@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-function QuestionForm(props) {
+function QuestionForm({ onAddQuestion }) {
   const [formData, setFormData] = useState({
     prompt: "",
     answer1: "",
@@ -19,7 +19,34 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    const postData = {
+      prompt: formData.prompt,
+      answers: [
+        formData.answer1,
+        formData.answer2,
+        formData.answer3,
+        formData.answer4,
+      ],
+      correctIndex: parseInt(formData.correctIndex),
+    };
+
+    fetch("http://localhost:4000/questions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(postData),
+    })
+      .then((r) => r.json())
+      .then((newQuestion) => {
+        onAddQuestion(newQuestion);
+        setFormData({
+          prompt: "",
+          answer1: "",
+          answer2: "",
+          answer3: "",
+          answer4: "",
+          correctIndex: 0,
+        });
+      });
   }
 
   return (
@@ -27,7 +54,7 @@ function QuestionForm(props) {
       <h1>New Question</h1>
       <form onSubmit={handleSubmit}>
         <label>
-          Prompt:
+          Prompt
           <input
             type="text"
             name="prompt"
@@ -36,7 +63,7 @@ function QuestionForm(props) {
           />
         </label>
         <label>
-          Answer 1:
+          Answer 1
           <input
             type="text"
             name="answer1"
@@ -45,7 +72,7 @@ function QuestionForm(props) {
           />
         </label>
         <label>
-          Answer 2:
+          Answer 2
           <input
             type="text"
             name="answer2"
@@ -54,7 +81,7 @@ function QuestionForm(props) {
           />
         </label>
         <label>
-          Answer 3:
+          Answer 3
           <input
             type="text"
             name="answer3"
@@ -63,7 +90,7 @@ function QuestionForm(props) {
           />
         </label>
         <label>
-          Answer 4:
+          Answer 4
           <input
             type="text"
             name="answer4"
@@ -72,7 +99,7 @@ function QuestionForm(props) {
           />
         </label>
         <label>
-          Correct Answer:
+          Correct Answer
           <select
             name="correctIndex"
             value={formData.correctIndex}
